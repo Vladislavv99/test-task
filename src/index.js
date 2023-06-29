@@ -1,18 +1,15 @@
 let users;
 const divchik = document.querySelector('#root');
-console.log(divchik);
 
 fetch('https://649be1de0480757192371065.mockapi.io/users')
   .then(res => res.json())
   .then(data => {
     users = data;
-    showArr();
 
     const markup = createMarkup();
     divchik.innerHTML = markup;
 
     const initialFollowersCounts = users.map(user => Number(user.followers));
-    console.log(initialFollowersCounts);
 
     const followersCountElements = document.querySelectorAll('.user-followers');
     const buttons = document.querySelectorAll('.follow-button');
@@ -91,10 +88,6 @@ fetch('https://649be1de0480757192371065.mockapi.io/users')
     });
   })
   .catch(err => console.log(err));
-
-function showArr() {
-  console.log(users);
-}
 
 function createMarkup() {
   return users
