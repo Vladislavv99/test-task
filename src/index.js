@@ -6,8 +6,34 @@ fetch('https://649be1de0480757192371065.mockapi.io/users')
   .then(data => {
     users = data;
 
-    const markup = createMarkup();
-    divchik.innerHTML = markup;
+    const pageSize = 3;
+    let currentPage = 1;
+
+    function renderPage(page) {
+      const startIndex = (page - 1) * pageSize;
+      const endIndex = page * pageSize;
+      const markup = createMarkup(startIndex, endIndex);
+
+      divchik.innerHTML += markup;
+
+      if (endIndex >= users.length) {
+        document.getElementById('load-more').style.display = 'none';
+      } else {
+        document.getElementById('load-more').style.display = 'block';
+      }
+    }
+
+    const btnLoadMore = document.getElementById('load-more');
+    btnLoadMore.addEventListener('click', () => {
+      loadMore();
+    });
+
+    function loadMore() {
+      currentPage++;
+      renderPage(currentPage);
+    }
+
+    renderPage(currentPage);
 
     const initialFollowersCounts = users.map(user => Number(user.followers));
 
@@ -89,8 +115,9 @@ fetch('https://649be1de0480757192371065.mockapi.io/users')
   })
   .catch(err => console.log(err));
 
-function createMarkup() {
+function createMarkup(startIndex, endIndex) {
   return users
+    .slice(startIndex, endIndex)
     .map(user => {
       return `<div class="user-card" id="${user.id}">
     <svg class='svg' xmlns="http://www.w3.org/2000/svg" width="76" height="22" fill="none">
