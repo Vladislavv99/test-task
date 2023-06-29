@@ -19,9 +19,47 @@ fetch('https://649be1de0480757192371065.mockapi.io/users')
 
     buttons.forEach((button, index) => {
       let followersCount = initialFollowersCounts[index];
+      let buttonText;
+
+      const storageKey = `user_${index}`;
+      const storedData = localStorage.getItem(storageKey);
+
+      if (storedData) {
+        const {
+          followersCount: storedFollowersCount,
+          buttonText: storedButtonText,
+        } = JSON.parse(storedData);
+        followersCount = parseInt(storedFollowersCount);
+        buttonText = storedButtonText;
+        updateFollowersCount(index, followersCount);
+        updateButtonText(button, buttonText);
+        updateButtonClass(button, buttonText);
+      }
+
+      function updateFollowersCount(index, count) {
+        followersCountElements[index].textContent = `${count.toLocaleString(
+          'en'
+        )} Followers`;
+      }
+
+      function updateButtonText(button, text) {
+        button.textContent = text;
+      }
+
+      function updateButtonClass(button, text) {
+        if (text === 'Following') {
+          button.classList.add('active-follow-button');
+        } else {
+          button.classList.remove('active-follow-button');
+        }
+      }
+
       button.addEventListener('click', e => {
         if (button.textContent === 'Follow') {
           followersCount += 1;
+
+          buttonText = 'Following';
+
           followersCountElements[
             index
           ].textContent = `${followersCount.toLocaleString('en')} Followers`;
@@ -30,6 +68,8 @@ fetch('https://649be1de0480757192371065.mockapi.io/users')
           button.classList.add('active-follow-button');
         } else {
           followersCount -= 1;
+          buttonText = 'Follow';
+
           followersCountElements[
             index
           ].textContent = `${followersCount.toLocaleString('en')} Followers`;
@@ -37,6 +77,16 @@ fetch('https://649be1de0480757192371065.mockapi.io/users')
           button.textContent = 'Follow';
           button.classList.remove('active-follow-button');
         }
+
+        updateFollowersCount(index, followersCount);
+        updateButtonText(button, buttonText);
+        updateButtonClass(button, buttonText);
+
+        const dataToStore = {
+          followersCount: followersCount.toString(),
+          buttonText: buttonText,
+        };
+        localStorage.setItem(storageKey, JSON.stringify(dataToStore));
       });
     });
   })
